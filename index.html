@@ -18,6 +18,7 @@
                 $('.subtitulo').html('Em jogo!');
                 this.player1Time = false;
                 this.isThereAWinner = false;
+                this.playsCounter = 0;
                 this.table = [
                     [-1,-1,-1], 
                     [-1,-1,-1], 
@@ -25,6 +26,7 @@
                 for (var id = 1; id < 10; id++){
                     $('#'+id).html('');
                 }
+                $('.deuVelha').hide();
                 $('.winnerH2').hide();
                 $('.status').fadeIn();
                 $('.playerTime').html('X');
@@ -35,12 +37,16 @@
                 this.checkWinner(i);
             }
             endOfGame(){
-                this.player1Time?this.player1Wins++:this.player2Wins++;
                 $('.status').hide();
-                $('.winner').html(this.getPlayerSymbol());
-                $('.winnerH2').fadeIn();
-                $('.placarX').html(this.player1Wins);
-                $('.placarO').html(this.player2Wins);
+                if (this.isThereAWinner){
+                    this.player1Time?this.player1Wins++:this.player2Wins++;
+                    $('.winner').html(this.getPlayerSymbol());
+                    $('.winnerH2').fadeIn();
+                    $('.placarX').html(this.player1Wins);
+                    $('.placarO').html(this.player2Wins);
+                } else {
+                    $('.deuVelha').fadeIn();
+                }
             }
             checkWinner(i){
                 //Checar cada linha e coluna
@@ -75,6 +81,8 @@
                 this.updateStatus();
                 this.player1Time = !this.player1Time;
                 this.putPlayInTable(id);
+                this.playsCounter++;
+                if (this.playsCounter == 9) this.endOfGame();
                 return this.getPlayerSymbol();
             }
             updateStatus(){
@@ -84,6 +92,7 @@
         var JogoDaVelha = new jogoDaVelha();
         $(document).ready(function(){
             $('.winnerH2').hide();
+            $('.deuVelha').hide();
             for(var i = 1; i <= 9; i++){
                 var id = 'c'+i;
                 $('.game').append('<h1 class="campo" id="'+i+'"></div>');
@@ -123,8 +132,9 @@
     <header>
         <h2 class="status">Vez do jogador <b class="playerTime">X</b></h2>
         <h2 class="winnerH2">O vencedor é <b class="winner"></b></h2>
+        <h2 class="deuVelha">Deu velha!</h2>
         <h2 class="placar">
-            Placar -> <b class="placarX">0</b> : <b class="placarO">0</b>
+            Placar &rarr; <b class="placarX">0</b> : <b class="placarO">0</b>
         </h2>
     </header>
     <div class="game"></div>
