@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--author: Kleim4n-->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JQuery Kleim4n</title>
+    <script src="./jquery-3.6.0.min.js"></script>
+    <script>
+        class jogoDaVelha{
+            constructor(){
+                this.player1Wins = 0;
+                this.player2Wins = 0;
+                this.reset();
+            }
+            reset(){
+                $('.subtitulo').html('Em jogo!');
+                this.player1Time = false;
+                this.isThereAWinner = false;
+                this.table = [
+                    [-1,-1,-1], 
+                    [-1,-1,-1], 
+                    [-1,-1,-1]];
+                for (var id = 1; id < 10; id++){
+                    $('#'+id).html('');
+                }
+                $('.winnerH2').hide();
+                $('.status').fadeIn();
+                $('.playerTime').html('X');
+            }
+            putPlayInTable(id){
+                var i = parseInt(id) - 1; //Obtem o index entre 0 e 8
+                this.table[Math.floor(i/3)][i%3] = this.player1Time; //true e false representam cada jogador na mesa
+                this.checkWinner(i);
+            }
+            endOfGame(){
+                this.player1Time?this.player1Wins++:this.player2Wins++;
+                $('.status').hide();
+                $('.winner').html(this.getPlayerSymbol());
+                $('.winnerH2').fadeIn();
+                $('.placarX').html(this.player1Wins);
+                $('.placarO').html(this.player2Wins);
+            }
+            checkWinner(i){
+                //Checar cada linha e coluna
+                this.isThereAWinner = 
+                (this.table[0].filter(x => x==this.player1Time).length == 3)?(true):(
+                    (this.table[1].filter(x => x==this.player1Time).length == 3)?(true):(
+                        (this.table[2].filter(x => x==this.player1Time).length == 3)?(true):(
+                            ([this.table[0][0], this.table[1][0], this.table[2][0]].filter(x => x==this.player1Time).length == 3)?(true):(
+                                ([this.table[0][1], this.table[1][1], this.table[2][1]].filter(x => x==this.player1Time).length == 3)?(true):(
+                                    ([this.table[0][2], this.table[1][2], this.table[2][2]].filter(x => x==this.player1Time).length == 3)?(true):(false)
+                                )))));
+                if (this.isThereAWinner);
+                else if ([this.table[0][0], this.table[1][1], this.table[2][2]].filter(x => x==this.player1Time).length == 3){
+                    //Verifica a primeira diagonal
+                    this.isThereAWinner = true;
+                } else if ([this.table[0][2], this.table[1][1], this.table[2][0]].filter(x => x==this.player1Time).length == 3){
+                    //Verifica a segunda diagonal
+                    this.isThereAWinner = true;
+                }
+                if (this.isThereAWinner){
+                    //Se houver ganhador o placar dele é aumentado em 1
+                    this.endOfGame();
+                }
+                return this.isThereAWinner?this.getPlayerSymbol():false;
+            }
+            getPlayerSymbol(){
+                return this.player1Time?'X':'O';
+            }
+            jogada(id) {
+                if (this.isThereAWinner) return;
+                if ($('#'+id).html() != '') return;
+                this.updateStatus();
+                this.player1Time = !this.player1Time;
+                this.putPlayInTable(id);
+                return this.getPlayerSymbol();
+            }
+            updateStatus(){
+                $('.playerTime').html(this.getPlayerSymbol());
+            }
+        }
+        var JogoDaVelha = new jogoDaVelha();
+        $(document).ready(function(){
+            $('.winnerH2').hide();
+            for(var i = 1; i <= 9; i++){
+                var id = 'c'+i;
+                $('.game').append('<h1 class="campo" id="'+i+'"></div>');
+            }
+            $('#1').click(function(){$('#1').html(JogoDaVelha.jogada('1'));});
+            $('#2').click(function(){$('#2').html(JogoDaVelha.jogada('2'));});
+            $('#3').click(function(){$('#3').html(JogoDaVelha.jogada('3'));});
+            $('#4').click(function(){$('#4').html(JogoDaVelha.jogada('4'));});
+            $('#5').click(function(){$('#5').html(JogoDaVelha.jogada('5'));});
+            $('#6').click(function(){$('#6').html(JogoDaVelha.jogada('6'));});
+            $('#7').click(function(){$('#7').html(JogoDaVelha.jogada('7'));});
+            $('#8').click(function(){$('#8').html(JogoDaVelha.jogada('8'));});
+            $('#9').click(function(){$('#9').html(JogoDaVelha.jogada('9'));});
+
+            $('button').click(function(){JogoDaVelha.reset();});
+        });
+    </script>
+    <style>
+        .game{
+            border: solid;
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
+        }
+        .campo{
+            text-align: center;
+            border: solid black 2px;
+            border-radius: 20%;
+            margin: 5px;
+        }
+        button{
+            border-radius: 20%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2 class="status">Vez do jogador <b class="playerTime">X</b></h2>
+        <h2 class="winnerH2">O vencedor é <b class="winner"></b></h2>
+        <h2 class="placar">
+            Placar -> <b class="placarX">0</b> : <b class="placarO">0</b>
+        </h2>
+    </header>
+    <div class="game"></div>
+    <button>Reiniciar</button>
+</body>
+</html>
