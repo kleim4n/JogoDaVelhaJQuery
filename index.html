@@ -12,6 +12,7 @@
             constructor(){
                 this.player1Wins = 0;
                 this.player2Wins = 0;
+                this.ctx = document.getElementById('canvas').getContext('2d');
                 this.reset();
             }
             reset(){
@@ -26,6 +27,7 @@
                 for (var id = 1; id < 10; id++){
                     $('#'+id).html('');
                 }
+                this.clearLine();
                 $('.deuVelha').hide();
                 $('.winnerH2').hide();
                 $('.status').fadeIn();
@@ -40,6 +42,7 @@
                 $('.status').hide();
                 if (this.isThereAWinner){
                     this.player1Time?this.player1Wins++:this.player2Wins++;
+                    this.drawLine();
                     $('.winner').html(this.getPlayerSymbol());
                     $('.winnerH2').fadeIn();
                     $('.placarX').html(this.player1Wins);
@@ -50,6 +53,7 @@
             }
             checkWinner(i){
                 //Checar cada linha e coluna
+                /*
                 this.isThereAWinner = 
                 (this.table[0].filter(x => x==this.player1Time).length == 3)?(true):(
                     (this.table[1].filter(x => x==this.player1Time).length == 3)?(true):(
@@ -57,14 +61,39 @@
                             ([this.table[0][0], this.table[1][0], this.table[2][0]].filter(x => x==this.player1Time).length == 3)?(true):(
                                 ([this.table[0][1], this.table[1][1], this.table[2][1]].filter(x => x==this.player1Time).length == 3)?(true):(
                                     ([this.table[0][2], this.table[1][2], this.table[2][2]].filter(x => x==this.player1Time).length == 3)?(true):(false)
-                                )))));
-                if (this.isThereAWinner);
-                else if ([this.table[0][0], this.table[1][1], this.table[2][2]].filter(x => x==this.player1Time).length == 3){
-                    //Verifica a primeira diagonal
+                                )))));*/
+                if (this.table[0].filter(x => x==this.player1Time).length == 3){
+                    //Verifica a 1ª linha
                     this.isThereAWinner = true;
+                    this.drawLine(1);
+                } else if (this.table[1].filter(x => x==this.player1Time).length == 3){
+                    //Verifica a 2ª linha
+                    this.isThereAWinner = true;
+                    this.drawLine(2);
+                } else if (this.table[2].filter(x => x==this.player1Time).length == 3){
+                    //Verifica a 3ª linha
+                    this.isThereAWinner = true;
+                    this.drawLine(3);
+                } else if ([this.table[0][0], this.table[1][0], this.table[2][0]].filter(x => x==this.player1Time).length == 3){
+                    //Verifica a 1ª coluna
+                    this.isThereAWinner = true;
+                    this.drawLine(4);
+                } else if ([this.table[0][1], this.table[1][1], this.table[2][1]].filter(x => x==this.player1Time).length == 3){
+                    //Verifica a 2ª coluna
+                    this.isThereAWinner = true;
+                    this.drawLine(5);
+                } else if ([this.table[0][2], this.table[1][2], this.table[2][2]].filter(x => x==this.player1Time).length == 3){
+                    //Verifica a 3ª coluna
+                    this.isThereAWinner = true;
+                    this.drawLine(6);
+                } else if ([this.table[0][0], this.table[1][1], this.table[2][2]].filter(x => x==this.player1Time).length == 3){
+                    //Verifica a 1ª diagonal
+                    this.isThereAWinner = true;
+                    this.drawLine(7);
                 } else if ([this.table[0][2], this.table[1][1], this.table[2][0]].filter(x => x==this.player1Time).length == 3){
-                    //Verifica a segunda diagonal
+                    //Verifica a 2ª diagonal
                     this.isThereAWinner = true;
+                    this.drawLine(8);
                 }
                 if (this.isThereAWinner){
                     //Se houver ganhador o placar dele é aumentado em 1
@@ -88,15 +117,72 @@
             updateStatus(){
                 $('.playerTime').html(this.getPlayerSymbol());
             }
+            drawLine(l){
+                //Inicia os parâmetros comuns do canvas
+                const cvWidth = $('#canvas').width();
+                this.ctx.lineWidth = 20;
+                this.ctx.globalAlpha = 0.6;
+                this.ctx.lineCap = 'round'; //Acho que não está funcionando
+                this.ctx.beginPath();
+                //Realiza o switch para a condição vencedora encontrada
+                switch (l){
+                    case 1:
+                        this.ctx.moveTo(0 , cvWidth/7 + 5);
+                        this.ctx.lineTo(cvWidth, cvWidth/7 + 5);
+                        break;
+                    case 2:
+                        this.ctx.moveTo(0 , cvWidth/2);
+                        this.ctx.lineTo(cvWidth, cvWidth/2);
+                        break;
+                    case 3:
+                        //Não está centralizado
+                        this.ctx.moveTo(0 , cvWidth - 40);
+                        this.ctx.lineTo(cvWidth, cvWidth - 40);
+                        break;
+                    case 4:
+                        this.ctx.moveTo(cvWidth/7 + 5 , 0);
+                        this.ctx.lineTo(cvWidth/7 + 5, cvWidth);
+                        break;
+                    case 5:
+                        this.ctx.moveTo(cvWidth/2 , 0);
+                        this.ctx.lineTo(cvWidth/2, cvWidth);
+                        break;
+                    case 6:
+                        //Não está centralizado
+                        this.ctx.moveTo(cvWidth - 40 , 0);
+                        this.ctx.lineTo(cvWidth - 40, cvWidth);
+                        break;
+                    case 7:
+                        this.ctx.moveTo(0 , 0);
+                        this.ctx.lineTo(cvWidth, cvWidth);
+                        break;
+                    case 8:
+                        this.ctx.moveTo(0 , cvWidth);
+                        this.ctx.lineTo(cvWidth, 0);
+                        break;
+                }
+                this.ctx.strokeStyle = '#a0ffdd';
+                this.ctx.stroke();
+                this.ctx.closePath();
+            }
+            clearLine(){
+                this.ctx.clearRect(0, 0, $('canvas').width()*2, $('canvas').height());
+            }
         }
-        var JogoDaVelha = new jogoDaVelha();
         $(document).ready(function(){
+            var JogoDaVelha = new jogoDaVelha();
+
+            //Esconde tags
             $('.winnerH2').hide();
             $('.deuVelha').hide();
+
+            //Cria os campos do jogo
             for(var i = 1; i <= 9; i++){
                 var id = 'c'+i;
                 $('.game').append('<h1 class="campo" id="'+i+'"></div>');
             }
+
+            //Define as funções de cada campo do jogo
             $('#1').click(function(){$('#1').html(JogoDaVelha.jogada('1'));});
             $('#2').click(function(){$('#2').html(JogoDaVelha.jogada('2'));});
             $('#3').click(function(){$('#3').html(JogoDaVelha.jogada('3'));});
@@ -120,11 +206,13 @@
         }
         .game{
             display: grid;
-            grid-template-columns: repeat(3, 50px);
-            grid-template-rows: repeat(3, 50px);
+            grid-template-columns: repeat(3, 80px);
+            grid-template-rows: repeat(3, 80px);
         }
         .campo{
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border: solid black 2px;
             border-radius: 20%;
             margin: 5px;
@@ -132,6 +220,11 @@
         button{
             border-radius: 30%;
             margin-top: 25px;
+        }
+        canvas{
+            grid-area : 1 / 1 / -1 / -1;
+            position: absolute;
+            z-index: -1;
         }
     </style>
 </head>
@@ -144,7 +237,11 @@
             Placar &rarr; <b class="placarX">0</b> : <b class="placarO">0</b>
         </h2>
     </header>
-    <div class="game"></div>
+    <div class="game" id="game">
+        <!--Há um erro no canvas quando definimos o width e o height diretamente no css, as coordenadas são comprimidas e as figuras são deformadas.-->
+        <canvas id="canvas" width="240px" height="240px"></canvas>
+    </div>
     <button>Reiniciar</button>
+    <h3 class="coord"></h3>
 </body>
 </html>
